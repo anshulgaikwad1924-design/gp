@@ -405,7 +405,7 @@ function showLanding(){
   landing.innerHTML = `
     <div class="landing-wrap">
       <div class="landing-hero">
-        <img src="logo.png" alt="Skillmate Logo" class="brand-logo-large" style="max-width: 280px; margin-bottom: 24px;">
+        <img src="logo-large.png" alt="Skillmate Logo" class="brand-logo-large" style="max-width: 360px; margin-bottom: 24px;">
         <span class="brand-mark">Peer-to-peer · Campus only</span>
         <h1>Trade what you know<br>for what you <em>want to learn</em>.</h1>
         <p class="lede">Skillmate matches students who can teach a skill with students who want to learn it — no fees, just a fair trade.</p>
