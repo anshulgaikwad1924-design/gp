@@ -516,7 +516,7 @@ function switchView(view){
   currentView = view;
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
   document.querySelectorAll('.view-panel').forEach(p => p.classList.add('hidden'));
-  const titles = { dashboard:'Dashboard', directory:'Skill Directory', profile:'My Profile', requests:'Swap Requests', sessions:'Sessions', lounge:'Virtual Lounge' };
+  const titles = { dashboard:'Dashboard', directory:'Skill Directory', profile:'My Profile', requests:'Swap Requests', sessions:'Sessions', lounge:'Virtual Meet' };
   document.getElementById('view-title').textContent = titles[view] || '';
   document.getElementById('view-' + view).classList.remove('hidden');
 
@@ -1153,7 +1153,11 @@ function sessionCardHTML(s, cu){
 
   let body = '';
   if(s.status === 'scheduled'){
-    body = `<div class="row-actions"><button class="btn btn-gold btn-sm" data-complete="${s.id}">Mark as completed</button></div>`;
+    body = `
+      <div class="row-actions" style="display:flex; gap:8px;">
+        <button class="btn btn-teal btn-sm" data-join-session="${s.id}">Join Video Call</button>
+        <button class="btn btn-gold btn-sm" data-complete="${s.id}">Mark as completed</button>
+      </div>`;
   }else{
     const myRatingGiven = iAmA ? s.ratingForB : s.ratingForA; // rating I gave to other
     const theirRatingGiven = iAmA ? s.ratingForA : s.ratingForB; // rating other gave me
@@ -1210,6 +1214,18 @@ function wireSessionActions(el){
     renderNotifBell();
   }));
 
+  el.querySelectorAll('[data-join-session]').forEach(b => b.addEventListener('click', () => {
+    const sId = b.getAttribute('data-join-session');
+    const cu = getCurrentUser();
+    const s = getSessions().find(x => x.id === sId);
+    if(s) {
+      const otherId = (s.userAId === cu.id) ? s.userBId : s.userAId;
+      const other = getUserById(otherId);
+      switchView('lounge');
+      joinChannel('session_' + sId, 'Session with ' + other.name);
+    }
+  }));
+
   el.querySelectorAll('.rate-block').forEach(block => {
     let selected = 0;
     const stars = block.querySelectorAll('.star-btn');
@@ -1243,10 +1259,7 @@ function wireSessionActions(el){
 
 /* ---------------- Lounge / Virtual Meet ---------------- */
 const CHANNELS = [
-  { id: 'general-chat', name: 'General Chat' },
-  { id: 'quiet-study', name: 'Quiet Study' },
-  { id: 'web-dev-help', name: 'Web Dev Help' },
-  { id: 'design-collab', name: 'Design Collab' }
+  { id: 'public-meet', name: 'Public Meet' }
 ];
 
 let jitsiAPI = null;
@@ -1258,22 +1271,38 @@ function renderLounge() {
   if (loungeRendered) return; // Don't re-render and kill active calls when navigating back
   loungeRendered = true;
 
+  const cu = getCurrentUser();
+  const mySessions = getSessions().filter(s => s.status === 'scheduled' && (s.userAId === cu.id || s.userBId === cu.id));
+
   el.innerHTML = `
     <div class="lounge-layout">
       <div class="lounge-sidebar">
         <div class="lounge-sidebar-header">Voice Channels</div>
         <div class="lounge-channels" id="lounge-channel-list">
           ${CHANNELS.map(c => `
-            <button class="lounge-channel-btn" data-channel="${c.id}">
+            <button class="lounge-channel-btn" data-channel="${c.id}" data-name="${escapeHTML(c.name)}">
               <span class="hashtag">#</span> ${escapeHTML(c.name)}
             </button>
           `).join('')}
+          
+          ${mySessions.length ? `
+            <div class="lounge-sidebar-header" style="margin-top:24px;">Private Sessions</div>
+            ${mySessions.map(s => {
+              const otherId = s.userAId === cu.id ? s.userBId : s.userAId;
+              const other = getUserById(otherId);
+              return `
+                <button class="lounge-channel-btn" data-channel="session_${s.id}" data-name="Session with ${escapeHTML(other.name)}">
+                  <span class="hashtag">🔒</span> ${escapeHTML(other.name)}
+                </button>
+              `;
+            }).join('')}
+          ` : ''}
         </div>
       </div>
       <div class="lounge-main">
         <div class="lounge-empty" id="lounge-empty-state">
           <div style="font-size:48px; margin-bottom:16px;">👋</div>
-          <h2>Welcome to the Lounge</h2>
+          <h2>Welcome to the Virtual Meet</h2>
           <p>Select a voice channel on the left to join the meet.</p>
         </div>
         <div class="jitsi-container hidden" id="jitsi-container"></div>
@@ -1286,7 +1315,7 @@ function renderLounge() {
     btn.addEventListener('click', () => {
       btns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      joinChannel(btn.dataset.channel, CHANNELS.find(x => x.id === btn.dataset.channel).name);
+      joinChannel(btn.dataset.channel, btn.dataset.name);
     });
   });
 }
