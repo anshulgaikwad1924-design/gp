@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Swap Campus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===================== LANDING (login/signup) ===================== -->
+  <div id="view-landing"></div>
+
+  <!-- ===================== APP SHELL ===================== -->
+  <div id="app-shell" class="app-shell hidden">
+    <nav class="side-nav">
+      <div class="brand">Skill<span>Swap</span></div>
+      <button class="nav-btn active" data-view="dashboard">Dashboard</button>
+      <button class="nav-btn" data-view="directory">Directory</button>
+      <button class="nav-btn" data-view="profile">Profile</button>
+      <button class="nav-btn" data-view="requests">Requests</button>
+      <button class="nav-btn" data-view="sessions">Sessions</button>
+      <div class="nav-spacer"></div>
+      <div class="current-user">
+        <div class="avatar sm" id="cu-avatar"></div>
+        <div>
+          <div class="cu-name" id="cu-name">—</div>
+          <button class="link-btn" id="logout-btn">Switch user</button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="main-area">
+      <header class="top-bar">
+        <div id="view-title">Dashboard</div>
+        <div class="notif-wrap">
+          <button class="icon-btn" id="notif-bell">🔔<span class="badge-count hidden" id="notif-count"></span></button>
+          <div class="notif-dropdown hidden" id="notif-dropdown"></div>
+        </div>
+      </header>
+
+      <section id="view-dashboard" class="view-panel"></section>
+      <section id="view-directory" class="view-panel hidden"></section>
+      <section id="view-profile" class="view-panel hidden"></section>
+      <section id="view-requests" class="view-panel hidden"></section>
+      <section id="view-sessions" class="view-panel hidden"></section>
+    </main>
+  </div>
+
+  <!-- ===================== MODAL ===================== -->
+  <div class="modal-overlay hidden" id="modal-overlay">
+    <div class="modal-content" id="modal-content"></div>
+  </div>
+
+  <!-- ===================== TOAST ===================== -->
+  <div class="toast hidden" id="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
