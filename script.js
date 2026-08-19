@@ -1320,6 +1320,11 @@ function joinChannel(channelId, channelName) {
   };
   
   jitsiAPI = new JitsiMeetExternalAPI(domain, options);
+  
+  // Automatically open the chat panel so it's obvious to the user
+  jitsiAPI.on('videoConferenceJoined', () => {
+    jitsiAPI.executeCommand('toggleChat');
+  });
 }
 
 /* ---------------- Init ---------------- */
