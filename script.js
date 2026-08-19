@@ -405,7 +405,7 @@ function showLanding(){
   landing.innerHTML = `
     <div class="landing-wrap">
       <div class="landing-hero">
-        <img src="logo-large.png" alt="Skillmate Logo" class="brand-logo-large" style="max-width: 360px; margin-bottom: 24px;">
+        <img src="logo-nav.png" alt="Skillmate Logo" class="brand-logo-large" style="max-width: 360px; margin-bottom: 24px;">
         <span class="brand-mark">Peer-to-peer · Campus only</span>
         <h1>Trade what you know<br>for what you <em>want to learn</em>.</h1>
         <p class="lede">Skillmate matches students who can teach a skill with students who want to learn it — no fees, just a fair trade.</p>
@@ -1268,49 +1268,53 @@ let loungeRendered = false;
 function renderLounge() {
   const el = document.getElementById('view-lounge');
   
-  if (loungeRendered) return; // Don't re-render and kill active calls when navigating back
-  loungeRendered = true;
+  if (!loungeRendered) {
+    loungeRendered = true;
+    el.innerHTML = `
+      <div class="lounge-layout">
+        <div class="lounge-sidebar">
+          <div class="lounge-sidebar-header">Voice Channels</div>
+          <div class="lounge-channels" id="lounge-channel-list"></div>
+        </div>
+        <div class="lounge-main">
+          <div class="lounge-empty" id="lounge-empty-state">
+            <div style="font-size:48px; margin-bottom:16px;">👋</div>
+            <h2>Welcome to the Virtual Meet</h2>
+            <p>Select a voice channel on the left to join the meet.</p>
+          </div>
+          <div class="jitsi-container hidden" id="jitsi-container"></div>
+        </div>
+      </div>
+    `;
+  }
 
+  // Always re-render the sidebar list so new private sessions appear
+  const listEl = document.getElementById('lounge-channel-list');
   const cu = getCurrentUser();
   const mySessions = getSessions().filter(s => s.status === 'scheduled' && (s.userAId === cu.id || s.userBId === cu.id));
 
-  el.innerHTML = `
-    <div class="lounge-layout">
-      <div class="lounge-sidebar">
-        <div class="lounge-sidebar-header">Voice Channels</div>
-        <div class="lounge-channels" id="lounge-channel-list">
-          ${CHANNELS.map(c => `
-            <button class="lounge-channel-btn" data-channel="${c.id}" data-name="${escapeHTML(c.name)}">
-              <span class="hashtag">#</span> ${escapeHTML(c.name)}
-            </button>
-          `).join('')}
-          
-          ${mySessions.length ? `
-            <div class="lounge-sidebar-header" style="margin-top:24px;">Private Sessions</div>
-            ${mySessions.map(s => {
-              const otherId = s.userAId === cu.id ? s.userBId : s.userAId;
-              const other = getUserById(otherId);
-              return `
-                <button class="lounge-channel-btn" data-channel="session_${s.id}" data-name="Session with ${escapeHTML(other.name)}">
-                  <span class="hashtag">🔒</span> ${escapeHTML(other.name)}
-                </button>
-              `;
-            }).join('')}
-          ` : ''}
-        </div>
-      </div>
-      <div class="lounge-main">
-        <div class="lounge-empty" id="lounge-empty-state">
-          <div style="font-size:48px; margin-bottom:16px;">👋</div>
-          <h2>Welcome to the Virtual Meet</h2>
-          <p>Select a voice channel on the left to join the meet.</p>
-        </div>
-        <div class="jitsi-container hidden" id="jitsi-container"></div>
-      </div>
-    </div>
+  listEl.innerHTML = `
+    ${CHANNELS.map(c => `
+      <button class="lounge-channel-btn" data-channel="${c.id}" data-name="${escapeHTML(c.name)}">
+        <span class="hashtag">#</span> ${escapeHTML(c.name)}
+      </button>
+    `).join('')}
+    
+    ${mySessions.length ? `
+      <div class="lounge-sidebar-header" style="margin-top:24px;">Private Sessions</div>
+      ${mySessions.map(s => {
+        const otherId = s.userAId === cu.id ? s.userBId : s.userAId;
+        const other = getUserById(otherId);
+        return `
+          <button class="lounge-channel-btn" data-channel="session_${s.id}" data-name="Session with ${escapeHTML(other.name)}">
+            <span class="hashtag">🔒</span> ${escapeHTML(other.name)}
+          </button>
+        `;
+      }).join('')}
+    ` : ''}
   `;
 
-  const btns = el.querySelectorAll('.lounge-channel-btn');
+  const btns = listEl.querySelectorAll('.lounge-channel-btn');
   btns.forEach(btn => {
     btn.addEventListener('click', () => {
       btns.forEach(b => b.classList.remove('active'));
