@@ -1,5 +1,5 @@
 /* =========================================================
-   Skill Swap Campus — app logic
+   Skillmate — app logic
    No backend: all data lives in localStorage.
    ========================================================= */
 
@@ -255,7 +255,7 @@ function importAllData(file){
       showToast('Backup restored! Reloading...');
       setTimeout(() => window.location.reload(), 900);
     }catch(e){
-      showToast('Could not read that file — is it a Skill Swap backup?');
+      showToast('Could not read that file — is it a Skillmate backup?');
       console.error(e);
     }
   };
@@ -407,7 +407,7 @@ function showLanding(){
       <div class="landing-hero">
         <span class="brand-mark">Peer-to-peer · Campus only</span>
         <h1>Trade what you know<br>for what you <em>want to learn</em>.</h1>
-        <p class="lede">Skill Swap Campus matches students who can teach a skill with students who want to learn it — no fees, just a fair trade.</p>
+        <p class="lede">Skillmate matches students who can teach a skill with students who want to learn it — no fees, just a fair trade.</p>
         <div class="trade-illustration">
           <span class="trade-chip teach">You teach React</span>
           <span class="trade-arrow">⇄</span>
@@ -1304,7 +1304,7 @@ function joinChannel(channelId, channelName) {
   const cu = getCurrentUser();
   const domain = 'meet.jit.si';
   const options = {
-    roomName: 'SkillSwapCampus_' + channelId,
+    roomName: 'Skillmate_' + channelId,
     width: '100%',
     height: '100%',
     parentNode: container,
