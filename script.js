@@ -63,7 +63,8 @@ function logoutUser(){
 
 /* ---------------- Seed data ---------------- */
 function seedIfNeeded(){
-  if(DB.seeded) return;
+  const hasAnshul = DB.users && DB.users.some(u => u.name === 'Anshul Gaikwad');
+  if(DB.seeded && hasAnshul) return;
 
   const palette = ['#2E6B5E','#B87F16','#3C4A8C','#AE4234','#6E6759','#1F7A8C','#8C5E3C'];
   const seedUsers = [
@@ -328,18 +329,26 @@ function closeModal(){
 let currentView = 'dashboard';
 
 async function boot(){
-  try {
-    const res = await fetch('/api/db');
-    if(res.ok) {
-      DB = await res.json();
-    } else {
-      throw new Error("Server not ok");
-    }
-  } catch(e) {
-    console.warn('Local server not found, falling back to localStorage (GitHub Pages mode)');
+  const isGitHubPages = window.location.hostname.includes('github.io');
+  
+  if (isGitHubPages) {
     useLocalServer = false;
     const local = localStorage.getItem('ssc_fallback_db');
     if (local) DB = JSON.parse(local);
+  } else {
+    try {
+      const res = await fetch('/api/db');
+      if(res.ok) {
+        DB = await res.json();
+      } else {
+        throw new Error("Server not ok");
+      }
+    } catch(e) {
+      console.warn('Local server not found, falling back to localStorage');
+      useLocalServer = false;
+      const local = localStorage.getItem('ssc_fallback_db');
+      if (local) DB = JSON.parse(local);
+    }
   }
 
   seedIfNeeded();
