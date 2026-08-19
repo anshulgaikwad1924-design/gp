@@ -468,7 +468,7 @@ function switchView(view){
   currentView = view;
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
   document.querySelectorAll('.view-panel').forEach(p => p.classList.add('hidden'));
-  const titles = { dashboard:'Dashboard', directory:'Skill Directory', profile:'My Profile', requests:'Swap Requests', sessions:'Sessions' };
+  const titles = { dashboard:'Dashboard', directory:'Skill Directory', profile:'My Profile', requests:'Swap Requests', sessions:'Sessions', lounge:'Virtual Lounge' };
   document.getElementById('view-title').textContent = titles[view] || '';
   document.getElementById('view-' + view).classList.remove('hidden');
 
@@ -477,6 +477,7 @@ function switchView(view){
   if(view === 'profile') renderProfile();
   if(view === 'requests') renderRequests();
   if(view === 'sessions') renderSessions();
+  if(view === 'lounge') renderLounge();
   renderNotifBell();
 }
 
@@ -1190,6 +1191,87 @@ function wireSessionActions(el){
       renderSessions();
     });
   });
+}
+
+/* ---------------- Lounge / Virtual Meet ---------------- */
+const CHANNELS = [
+  { id: 'general-chat', name: 'General Chat' },
+  { id: 'quiet-study', name: 'Quiet Study' },
+  { id: 'web-dev-help', name: 'Web Dev Help' },
+  { id: 'design-collab', name: 'Design Collab' }
+];
+
+let jitsiAPI = null;
+let loungeRendered = false;
+
+function renderLounge() {
+  const el = document.getElementById('view-lounge');
+  
+  if (loungeRendered) return; // Don't re-render and kill active calls when navigating back
+  loungeRendered = true;
+
+  el.innerHTML = `
+    <div class="lounge-layout">
+      <div class="lounge-sidebar">
+        <div class="lounge-sidebar-header">Voice Channels</div>
+        <div class="lounge-channels" id="lounge-channel-list">
+          ${CHANNELS.map(c => `
+            <button class="lounge-channel-btn" data-channel="${c.id}">
+              <span class="hashtag">#</span> ${escapeHTML(c.name)}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+      <div class="lounge-main">
+        <div class="lounge-empty" id="lounge-empty-state">
+          <div style="font-size:48px; margin-bottom:16px;">👋</div>
+          <h2>Welcome to the Lounge</h2>
+          <p>Select a voice channel on the left to join the meet.</p>
+        </div>
+        <div class="jitsi-container hidden" id="jitsi-container"></div>
+      </div>
+    </div>
+  `;
+
+  const btns = el.querySelectorAll('.lounge-channel-btn');
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      joinChannel(btn.dataset.channel, CHANNELS.find(x => x.id === btn.dataset.channel).name);
+    });
+  });
+}
+
+function joinChannel(channelId, channelName) {
+  const container = document.getElementById('jitsi-container');
+  const emptyState = document.getElementById('lounge-empty-state');
+  
+  container.classList.remove('hidden');
+  emptyState.classList.add('hidden');
+  
+  if (jitsiAPI) {
+    jitsiAPI.dispose();
+  }
+  
+  const cu = getCurrentUser();
+  const domain = 'meet.jit.si';
+  const options = {
+    roomName: 'SkillSwapCampus_' + channelId,
+    width: '100%',
+    height: '100%',
+    parentNode: container,
+    userInfo: {
+      displayName: cu.name
+    },
+    configOverwrite: {
+      startWithAudioMuted: true,
+      startWithVideoMuted: true,
+      prejoinPageEnabled: false
+    }
+  };
+  
+  jitsiAPI = new JitsiMeetExternalAPI(domain, options);
 }
 
 /* ---------------- Init ---------------- */

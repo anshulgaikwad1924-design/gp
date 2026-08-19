@@ -565,3 +565,85 @@ p{ margin:0 0 8px; }
   .ticket-mid{ border-left:none; border-right:none; border-top:2px dashed var(--line-strong); border-bottom:2px dashed var(--line-strong); flex-direction:row; }
   .quick-login-grid{ grid-template-columns: 1fr; }
 }
+
+/* ---------------- Lounge / Virtual Meet ---------------- */
+.lounge-layout {
+  display: flex;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--line-faint);
+  background: white;
+}
+.lounge-sidebar {
+  width: 240px;
+  background: #f9f9f9;
+  border-right: 1px solid var(--line-faint);
+  display: flex;
+  flex-direction: column;
+}
+.lounge-sidebar-header {
+  padding: 16px;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 18px;
+  border-bottom: 1px solid var(--line-faint);
+}
+.lounge-channels {
+  padding: 12px 8px;
+  flex: 1;
+  overflow-y: auto;
+}
+.lounge-channel-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink-base);
+  font-weight: 500;
+  text-align: left;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 4px;
+}
+.lounge-channel-btn:hover {
+  background: #ebebeb;
+}
+.lounge-channel-btn.active {
+  background: var(--ink-base);
+  color: white;
+}
+.lounge-channel-btn.active .hashtag {
+  color: rgba(255,255,255,0.7);
+}
+.lounge-channel-btn .hashtag {
+  color: var(--ink-faint);
+  font-size: 16px;
+  font-weight: 400;
+}
+.lounge-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #202124;
+}
+.lounge-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-faint);
+  font-family: var(--font-serif);
+  background: white;
+}
+.jitsi-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+}
+
