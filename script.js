@@ -16,15 +16,22 @@ let DB = {
   seeded: false
 };
 
+let useLocalServer = true;
+
 async function saveDB(){
-  try{
-    await fetch('/api/db/update', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(DB)
-    });
-  }catch(e){
-    console.error('Failed to save DB to server', e);
+  if (useLocalServer) {
+    try{
+      await fetch('/api/db/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(DB)
+      });
+    }catch(e){
+      console.warn('Failed to save DB to server. Falling back to localStorage.', e);
+      localStorage.setItem('ssc_fallback_db', JSON.stringify(DB));
+    }
+  } else {
+    localStorage.setItem('ssc_fallback_db', JSON.stringify(DB));
   }
 }
 
@@ -299,9 +306,16 @@ let currentView = 'dashboard';
 async function boot(){
   try {
     const res = await fetch('/api/db');
-    if(res.ok) DB = await res.json();
+    if(res.ok) {
+      DB = await res.json();
+    } else {
+      throw new Error("Server not ok");
+    }
   } catch(e) {
-    console.error('Failed to load DB from server', e);
+    console.warn('Local server not found, falling back to localStorage (GitHub Pages mode)');
+    useLocalServer = false;
+    const local = localStorage.getItem('ssc_fallback_db');
+    if (local) DB = JSON.parse(local);
   }
 
   seedIfNeeded();
