@@ -122,6 +122,30 @@ function seedIfNeeded(){
       learn:[{skill:'Figma', level:'Intermediate'},{skill:'Video Editing', level:'Beginner'}],
       availability:{hours:5, days:['Fri','Sat']},
       links:{github:'github.com/arjunv', linkedin:'', portfolio:''}
+    },
+    {
+      name:'Anshul Gaikwad', email:'anshulgaikwad1924@gmail.com', dept:'Design', year:'3rd Year',
+      bio:'Passionate about UI/UX and product design.',
+      teach:[{skill:'UI/UX Design', level:'Advanced'}],
+      learn:[{skill:'React', level:'Beginner'}],
+      availability:{hours:5, days:['Mon','Wed']},
+      links:{github:'', linkedin:'', portfolio:''}
+    },
+    {
+      name:'Elvin Neware', email:'elvin@campus.edu', dept:'CSE', year:'2nd Year',
+      bio:'Frontend developer looking to collaborate.',
+      teach:[{skill:'React', level:'Intermediate'}],
+      learn:[{skill:'UI/UX Design', level:'Intermediate'}],
+      availability:{hours:4, days:['Tue','Thu']},
+      links:{github:'', linkedin:'', portfolio:''}
+    },
+    {
+      name:'Arya Ramteke', email:'arya@campus.edu', dept:'CSE', year:'3rd Year',
+      bio:'Loves solving complex algorithmic challenges.',
+      teach:[{skill:'Algorithms', level:'Advanced'}],
+      learn:[{skill:'Machine Learning', level:'Beginner'}],
+      availability:{hours:6, days:['Sat','Sun']},
+      links:{github:'', linkedin:'', portfolio:''}
     }
   ];
 
