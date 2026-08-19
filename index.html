@@ -63,6 +63,26 @@
   <!-- ===================== TOAST ===================== -->
   <div class="toast hidden" id="toast"></div>
 
+  <!-- ===================== AI CHAT WIDGET ===================== -->
+  <div class="ai-widget-container" id="ai-widget-container">
+    <div class="ai-chat-panel hidden" id="ai-chat-panel">
+      <div class="ai-chat-header">
+        <div class="ai-header-title">
+          <span class="ai-sparkle">✨</span> Skillmate AI
+        </div>
+        <button class="icon-btn" id="ai-close-btn" style="color:var(--ink-soft); font-size:18px;">✕</button>
+      </div>
+      <div class="ai-chat-messages" id="ai-chat-messages">
+        <div class="ai-msg ai-sys">Hi! I'm your AI assistant. Need help finding a skill, writing your bio, or navigating the platform?</div>
+      </div>
+      <div class="ai-chat-input-area">
+        <input type="text" id="ai-input" placeholder="Ask me anything..." autocomplete="off">
+        <button id="ai-send-btn">➤</button>
+      </div>
+    </div>
+    <button class="ai-fab" id="ai-fab">✨</button>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>

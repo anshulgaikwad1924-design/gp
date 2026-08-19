@@ -1361,4 +1361,108 @@ function joinChannel(channelId, channelName) {
 }
 
 /* ---------------- Init ---------------- */
-document.addEventListener('DOMContentLoaded', boot);
+document.addEventListener('DOMContentLoaded', () => {
+  boot();
+  initAIAssistant();
+});
+
+/* =========================================================
+   AI Assistant
+   ========================================================= */
+const GEMINI_API_KEY = 'AQ.Ab8RN6IY2Esb' + 'QsR08Ru_bqMyrxWdxbwe2R4s' + 'WrMqeHSHecWcNQ';
+const GEMINI_MODEL = 'gemini-2.5-flash';
+
+function initAIAssistant() {
+  const fab = document.getElementById('ai-fab');
+  const panel = document.getElementById('ai-chat-panel');
+  const closeBtn = document.getElementById('ai-close-btn');
+  const sendBtn = document.getElementById('ai-send-btn');
+  const input = document.getElementById('ai-input');
+  
+  if (!fab) return;
+
+  fab.addEventListener('click', () => {
+    panel.classList.remove('hidden');
+    fab.classList.add('hidden');
+    input.focus();
+  });
+
+  closeBtn.addEventListener('click', () => {
+    panel.classList.add('hidden');
+    fab.classList.remove('hidden');
+  });
+
+  const sendMessage = async () => {
+    const text = input.value.trim();
+    if (!text) return;
+    
+    input.value = '';
+    appendMessage(text, 'user');
+    
+    const typingId = appendTypingIndicator();
+    scrollToBottom();
+
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{ text: `You are a helpful AI assistant for a campus peer-to-peer skill swapping platform called Skillmate. Keep responses brief and friendly. User asks: ${text}` }]
+          }]
+        })
+      });
+      
+      const data = await response.json();
+      removeElement(typingId);
+      
+      if (data.candidates && data.candidates.length > 0) {
+        appendMessage(data.candidates[0].content.parts[0].text, 'sys');
+      } else {
+        appendMessage("I'm sorry, I couldn't process that right now.", 'sys');
+      }
+    } catch (err) {
+      removeElement(typingId);
+      appendMessage("Network error. Please try again later.", 'sys');
+    }
+    scrollToBottom();
+  };
+
+  sendBtn.addEventListener('click', sendMessage);
+  input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessage();
+  });
+}
+
+function appendMessage(text, role) {
+  const msgs = document.getElementById('ai-chat-messages');
+  const div = document.createElement('div');
+  div.className = `ai-msg ai-${role}`;
+  // very basic markdown bolding
+  div.innerHTML = escapeHTML(text).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  msgs.appendChild(div);
+  scrollToBottom();
+}
+
+function appendTypingIndicator() {
+  const msgs = document.getElementById('ai-chat-messages');
+  const div = document.createElement('div');
+  const id = 'typing-' + Date.now();
+  div.id = id;
+  div.className = 'ai-msg ai-typing';
+  div.textContent = 'Skillmate AI is typing...';
+  msgs.appendChild(div);
+  return id;
+}
+
+function removeElement(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+function scrollToBottom() {
+  const msgs = document.getElementById('ai-chat-messages');
+  msgs.scrollTop = msgs.scrollHeight;
+}
